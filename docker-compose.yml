@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: attitude-factory-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: attitude
+      POSTGRES_PASSWORD: attitude_dev_password
+      POSTGRES_DB: attitude_factory
+    ports:
+      - "5437:5432"
+    volumes:
+      - attitude_factory_postgres_v17:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U attitude -d attitude_factory"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  attitude_factory_postgres_v17:

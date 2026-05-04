@@ -1,0 +1,23 @@
+attitude-factory.com {
+  encode zstd gzip
+
+  # Security headers
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options "nosniff"
+    X-Frame-Options "DENY"
+    Referrer-Policy "strict-origin-when-cross-origin"
+    -Server
+  }
+
+  reverse_proxy app:3000
+}
+
+www.attitude-factory.com {
+  redir https://attitude-factory.com{uri} permanent
+}
+
+operator.attitude-factory.com {
+  encode zstd gzip
+  reverse_proxy app:3000
+}

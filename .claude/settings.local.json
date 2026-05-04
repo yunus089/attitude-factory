@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone *)",
+      "Read(//c/Users/yunus/AppData/Local/Temp/gstack//**)",
+      "Read(//c/Users/yunus/AppData/Local/Temp/gstack/**)",
+      "Bash(mkdir -p ~/.gstack/repos)",
+      "Bash(mv /c/Users/yunus/AppData/Local/Temp/gstack ~/.gstack/repos/gstack)",
+      "Read(//c/Users/yunus/.gstack/repos/**)",
+      "Bash(bash setup *)",
+      "Bash(rsync -a /c/Users/yunus/.codex/skills/ /c/Users/yunus/.claude/skills/)",
+      "Bash(mkdir -p /c/Users/yunus/.claude/skills)",
+      "Bash(cp -a /c/Users/yunus/.codex/skills/* /c/Users/yunus/.claude/skills/)",
+      "Skill(gstack)",
+      "Skill(gstack:*)",
+      "Bash(./setup)",
+      "Bash(npx skills *)"
+    ]
+  }
+}

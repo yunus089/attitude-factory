@@ -1,0 +1,514 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  GRUENDER @map("gruender")
+  OPERATOR @map("operator")
+}
+
+enum UserStatus {
+  AKTIV    @map("aktiv")
+  PAUSIERT @map("pausiert")
+}
+
+enum PersonaStatus {
+  ENTWURF    @map("entwurf")
+  AKTIV      @map("aktiv")
+  PAUSIERT   @map("pausiert")
+  GESTOPPT   @map("gestoppt")
+  ARCHIVIERT @map("archiviert")
+}
+
+enum PlatformName {
+  INSTAGRAM @map("instagram")
+  FACEBOOK  @map("facebook")
+  TIKTOK    @map("tiktok")
+  YOUTUBE   @map("youtube")
+}
+
+enum ContentFormat {
+  EINZELBILD @map("einzelbild")
+  CAROUSEL   @map("carousel")
+  KURZVIDEO  @map("kurzvideo")
+  STORY      @map("story")
+}
+
+enum ContentIntent {
+  REICHWEITE          @map("reichweite")
+  SAVES               @map("saves")
+  SHARES              @map("shares")
+  FOLLOWS             @map("follows")
+  VERTRAUEN           @map("vertrauen")
+  AFFILIATE_SOFT_TEST @map("affiliate_soft_test")
+  AFFILIATE_HARD_SELL @map("affiliate_hard_sell")
+  WELTAUFBAU          @map("weltaufbau")
+  TREND               @map("trend")
+}
+
+enum ContentStatus {
+  IDEE              @map("idee")
+  GEBRIEFT          @map("gebrieft")
+  TEXT_ENTWURF      @map("text_entwurf")
+  MATERIAL_FEHLT    @map("material_fehlt")
+  MATERIAL_BEREIT   @map("material_bereit")
+  PRUEFUNG          @map("pruefung")
+  BEREIT_ZUM_POSTEN @map("bereit_zum_posten")
+  GEPOSTET          @map("gepostet")
+  KENNZAHLEN_FEHLEN @map("kennzahlen_fehlen")
+  AUSGEWERTET       @map("ausgewertet")
+  WIEDERVERWENDEN   @map("wiederverwenden")
+  AUSBAUEN          @map("ausbauen")
+  STOPPEN_PAUSIEREN @map("stoppen_pausieren")
+}
+
+enum AssetType {
+  REFERENZ       @map("referenz")
+  SETCARD        @map("setcard")
+  POSTBILD       @map("postbild")
+  CAROUSEL_SLIDE @map("carousel_slide")
+  KURZVIDEO      @map("kurzvideo")
+  PROMPT         @map("prompt")
+  STYLE_GUIDE    @map("style_guide")
+}
+
+enum AssetStatus {
+  ROH                         @map("roh")
+  KANDIDAT                    @map("kandidat")
+  FREIGEGEBENE_REFERENZ       @map("freigegebene_referenz")
+  FREIGEGEBENES_POST_MATERIAL @map("freigegebenes_post_material")
+  BEARBEITEN                  @map("bearbeiten")
+  ABGELEHNT                   @map("abgelehnt")
+  ARCHIVIERT                  @map("archiviert")
+}
+
+enum TaskStatus {
+  OFFEN     @map("offen")
+  IN_ARBEIT @map("in_arbeit")
+  BLOCKIERT @map("blockiert")
+  ERLEDIGT  @map("erledigt")
+}
+
+enum ExperimentStatus {
+  GEPLANT     @map("geplant")
+  AKTIV       @map("aktiv")
+  AUSGEWERTET @map("ausgewertet")
+  GESTOPPT    @map("gestoppt")
+}
+
+enum HookStatus {
+  IDEE     @map("idee")
+  GETESTET @map("getestet")
+  GEWINNER @map("gewinner")
+  SCHWACH  @map("schwach")
+}
+
+enum DecisionSignal {
+  KENNZAHLEN_FEHLEN     @map("kennzahlen_fehlen")
+  PRUEFUNG_NOETIG       @map("pruefung_noetig")
+  GEWINNER_KANDIDAT     @map("gewinner_kandidat")
+  SCHWACHES_SIGNAL      @map("schwaches_signal")
+  VIDEOEINSATZ_KANDIDAT @map("videoeinsatz_kandidat")
+  AUSBAUEN              @map("ausbauen")
+  STOPPEN_PAUSIEREN     @map("stoppen_pausieren")
+  WIEDERVERWENDEN       @map("wiederverwenden")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  name          String
+  email         String     @unique
+  emailVerified Boolean    @default(false)
+  image         String?
+  role          UserRole   @default(OPERATOR)
+  status        UserStatus @default(AKTIV)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  contentItems     ContentItem[]
+  decisions        DecisionLog[]
+  accounts         Account[]
+  ownedPersonas    Persona[]     @relation("PersonaOwner")
+  operatedPersonas Persona[]     @relation("PersonaOperator")
+  sessions         Session[]
+  tasks            Task[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verification")
+}
+
+model Persona {
+  id                    String        @id @default(cuid())
+  name                  String
+  publicName            String
+  ownerUserId           String?
+  operatorUserId        String?
+  lane                  String
+  niche                 String
+  status                PersonaStatus @default(ENTWURF)
+  launchWave            Boolean       @default(false)
+  launchWaveOrder       Int?
+  backlogActivationNote String?
+  setcardStatus         String        @default("fehlt")
+  mediaReadinessStatus  String        @default("offen")
+  archetype             String?
+  originStory           String?
+  targetAudience        String?
+  audiencePain          String?
+  audienceDesire        String?
+  feedEnemies           String?
+  differentiationThesis String?
+  contentWedge          String?
+  visualIdentity        String?
+  visualColorPalette    String?
+  visualLocations       String?
+  visualOutfitAnchors   String?
+  visualLightingLogic   String?
+  visualCameraDistance  String?
+  visualNoGoImages      String?
+  visualFaceConsistency String?
+  voiceRules            String?
+  bannedClaims          String?
+  disclosureRules       String?
+  monetizationNotes     String?
+  priorityScore         Int           @default(0)
+  instagramReachScore   Int           @default(0)
+  affiliateFitScore     Int           @default(0)
+  assetEaseScore        Int           @default(0)
+  setcardQualityScore   Int           @default(0)
+  repeatabilityScore    Int           @default(0)
+  differentiationScore  Int           @default(0)
+  complianceEaseScore   Int           @default(0)
+  operatorFitScore      Int           @default(0)
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  owner       User?                @relation("PersonaOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  operator    User?                @relation("PersonaOperator", fields: [operatorUserId], references: [id], onDelete: SetNull)
+  accounts    PlatformAccount[]
+  content     ContentItem[]
+  assets      AssetFile[]
+  experiments Experiment[]
+  offers      OfferReadinessItem[]
+  research    ResearchItem[]
+  videos      VideoSlot[]
+  hooks       Hook[]
+
+  @@unique([name])
+  @@index([status])
+  @@index([operatorUserId, launchWave])
+}
+
+model PlatformAccount {
+  id            String       @id @default(cuid())
+  personaId     String
+  platform      PlatformName
+  handle        String?
+  profileUrl    String?
+  followerCount Int          @default(0)
+  status        String       @default("entwurf")
+  notes         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  persona Persona @relation(fields: [personaId], references: [id], onDelete: Cascade)
+
+  @@unique([personaId, platform])
+  @@index([personaId, platform])
+}
+
+model ContentItem {
+  id                   String        @id @default(cuid())
+  personaId            String
+  ownerUserId          String?
+  format               ContentFormat
+  intent               ContentIntent
+  pillar               String?
+  hook                 String
+  brief                String?
+  outline              String?
+  caption              String?
+  cta                  String?
+  disclosure           String?
+  status               ContentStatus @default(IDEE)
+  plannedDate          DateTime?
+  postedAt             DateTime?
+  postUrl              String?
+  complianceStatus     String        @default("offen")
+  experimentId         String?
+  offerReadinessItemId String?
+  hookId               String?
+  triggerTags          String[]      @default([])
+  hookType             String?
+  ctaType              String?
+  originalityStatus    String        @default("offen")
+  productionAngle      String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  persona        Persona             @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  owner          User?               @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  experiment     Experiment?         @relation(fields: [experimentId], references: [id], onDelete: SetNull)
+  offerReadiness OfferReadinessItem? @relation(fields: [offerReadinessItemId], references: [id], onDelete: SetNull)
+  hookRecord     Hook?               @relation(fields: [hookId], references: [id], onDelete: SetNull)
+  assets         AssetFile[]
+  metrics        MetricSnapshot[]
+  compliance     ComplianceCheck?
+  videos         VideoSlot[]
+
+  @@index([personaId, status])
+  @@index([ownerUserId, plannedDate])
+  @@index([postedAt])
+}
+
+model AssetFile {
+  id                String      @id @default(cuid())
+  personaId         String?
+  contentItemId     String?
+  assetType         AssetType
+  sourceTool        String?
+  storagePath       String
+  originalFilename  String
+  mimeType          String
+  byteSize          Int
+  prompt            String?
+  qualityRating     Int?
+  consistencyRating Int?
+  status            AssetStatus @default(ROH)
+  notes             String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  persona     Persona?     @relation(fields: [personaId], references: [id], onDelete: SetNull)
+  contentItem ContentItem? @relation(fields: [contentItemId], references: [id], onDelete: SetNull)
+
+  @@index([personaId, status])
+  @@index([contentItemId])
+}
+
+model MetricSnapshot {
+  id            String   @id @default(cuid())
+  contentItemId String
+  capturedAt    DateTime
+  impressions   Int      @default(0)
+  reach         Int      @default(0)
+  likes         Int      @default(0)
+  comments      Int      @default(0)
+  saves         Int      @default(0)
+  shares        Int      @default(0)
+  profileVisits Int      @default(0)
+  follows       Int      @default(0)
+  linkClicks    Int      @default(0)
+  sales         Int      @default(0)
+  revenueCents  Int      @default(0)
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  contentItem ContentItem @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+
+  @@index([contentItemId, capturedAt])
+}
+
+model DecisionLog {
+  id                String         @id @default(cuid())
+  relatedEntityType String
+  relatedEntityId   String
+  signal            DecisionSignal
+  decision          String
+  reason            String
+  decidedByUserId   String?
+  decidedAt         DateTime       @default(now())
+
+  decidedBy User? @relation(fields: [decidedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([relatedEntityType, relatedEntityId])
+}
+
+model ResearchItem {
+  id                   String   @id @default(cuid())
+  personaId            String?
+  sourceUrl            String?
+  note                 String?
+  category             String
+  whyItMatters         String?
+  suggestedContentIdea String?
+  ownerUserId          String?
+  status               String   @default("erfasst")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  persona Persona? @relation(fields: [personaId], references: [id], onDelete: SetNull)
+
+  @@index([status, personaId])
+}
+
+model Experiment {
+  id            String           @id @default(cuid())
+  personaId     String
+  name          String
+  hypothesis    String
+  variable      String
+  primaryMetric String
+  startDate     DateTime?
+  endDate       DateTime?
+  status        ExperimentStatus @default(GEPLANT)
+  result        String?
+  decision      String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  persona Persona       @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  content ContentItem[]
+}
+
+model Hook {
+  id          String        @id @default(cuid())
+  personaId   String
+  text        String
+  status      HookStatus    @default(IDEE)
+  intent      ContentIntent
+  triggerTags String[]      @default([])
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  persona      Persona       @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  contentItems ContentItem[]
+}
+
+model OfferReadinessItem {
+  id                String   @id @default(cuid())
+  personaId         String
+  category          String
+  specificOfferName String?
+  claimSafeAngle    String?
+  softCta           String?
+  disclosureText    String?
+  readinessLevel    Int      @default(0)
+  status            String   @default("offen")
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  persona Persona       @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  content ContentItem[]
+}
+
+model ComplianceCheck {
+  id                         String   @id @default(cuid())
+  contentItemId              String   @unique
+  aiDisclosureChecked        Boolean  @default(false)
+  affiliateDisclosureChecked Boolean  @default(false)
+  noFakeUsageClaim           Boolean  @default(false)
+  noMedicalClaim             Boolean  @default(false)
+  noFinancialClaim           Boolean  @default(false)
+  notes                      String?
+  status                     String   @default("offen")
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+
+  contentItem ContentItem @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id                String     @id @default(cuid())
+  assigneeUserId    String?
+  relatedEntityType String?
+  relatedEntityId   String?
+  title             String
+  status            TaskStatus @default(OFFEN)
+  dueDate           DateTime?
+  priority          Int        @default(2)
+  blockedReason     String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  assignee User? @relation(fields: [assigneeUserId], references: [id], onDelete: SetNull)
+
+  @@index([assigneeUserId, status, dueDate])
+}
+
+model VideoSlot {
+  id               String   @id @default(cuid())
+  date             DateTime
+  personaId        String?
+  contentItemId    String?
+  reason           String
+  expectedLearning String?
+  productionStatus String   @default("geplant")
+  publishedUrl     String?
+  result           String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  persona     Persona?     @relation(fields: [personaId], references: [id], onDelete: SetNull)
+  contentItem ContentItem? @relation(fields: [contentItemId], references: [id], onDelete: SetNull)
+
+  @@index([date, personaId])
+}
+
+model WarRoomTest {
+  id                String    @id @default(cuid())
+  name              String
+  startDate         DateTime
+  endDate           DateTime
+  status            String    @default("aktiv")
+  activePersonaIds  String[]
+  dailyOutputTarget Int       @default(3)
+  nextDecisionDate  DateTime?
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}

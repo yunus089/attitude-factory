@@ -1,0 +1,637 @@
+﻿<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Attitude Factory Operator OS - Designvorschau</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #191a1a;
+      --graphite: #2b2d2e;
+      --steel: #646a6f;
+      --mist: #ecefed;
+      --panel: #ffffff;
+      --signal: #e7473c;
+      --volt: #b7f34a;
+      --cyan: #29a7e1;
+      --amber: #f2a93b;
+      --zara: #d85c82;
+      --alex: #f36b2d;
+      --david: #2f6fed;
+      --success: #20a464;
+      --line: #d9ddda;
+      --soft: #f7f8f6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--mist);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 232px 1fr;
+    }
+
+    .rail {
+      background: var(--ink);
+      color: white;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 4px 6px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.14);
+    }
+
+    .mark {
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255,255,255,.3);
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      color: var(--volt);
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 600;
+    }
+
+    .brand strong {
+      font-family: "IBM Plex Sans Condensed", sans-serif;
+      text-transform: uppercase;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .brand span {
+      display: block;
+      color: rgba(255,255,255,.56);
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    nav {
+      display: grid;
+      gap: 4px;
+    }
+
+    .nav-item {
+      min-height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 10px;
+      color: rgba(255,255,255,.7);
+      font-size: 13px;
+    }
+
+    .nav-item.active {
+      background: rgba(255,255,255,.08);
+      color: white;
+      box-shadow: inset 3px 0 0 var(--volt);
+    }
+
+    .main {
+      display: grid;
+      grid-template-rows: 58px 1fr;
+      min-width: 0;
+    }
+
+    .topbar {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      gap: 16px;
+    }
+
+    .crumb {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--steel);
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 24px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      border-radius: 999px;
+      padding: 0 9px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--volt);
+      display: inline-block;
+    }
+
+    .content {
+      padding: 22px 24px 32px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .page-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+    }
+
+    h1, h2, h3 {
+      font-family: "IBM Plex Sans Condensed", sans-serif;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: 36px;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: 22px;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      color: var(--steel);
+      margin: 8px 0 0;
+      font-size: 14px;
+    }
+
+    .button {
+      height: 36px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--ink);
+      color: white;
+      padding: 0 14px;
+      font-weight: 600;
+      font-family: "IBM Plex Sans", sans-serif;
+    }
+
+    .button.secondary {
+      background: var(--panel);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .war-room {
+      background: var(--ink);
+      color: white;
+      border-radius: 8px;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1.1fr repeat(5, minmax(118px, 1fr));
+      gap: 12px;
+      align-items: stretch;
+      box-shadow: 0 18px 36px rgba(25,26,26,.12);
+    }
+
+    .war-title {
+      border-right: 1px solid rgba(255,255,255,.12);
+      padding-right: 16px;
+    }
+
+    .war-title h2 {
+      color: var(--volt);
+    }
+
+    .war-title p {
+      color: rgba(255,255,255,.64);
+      margin: 8px 0 0;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .metric {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 7px;
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .metric span {
+      display: block;
+      color: rgba(255,255,255,.58);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .metric strong {
+      display: block;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 24px;
+      margin-top: 9px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.4fr .8fr;
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      padding: 0 14px;
+    }
+
+    .panel-head h3 {
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    .queue {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .queue th, .queue td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .queue th {
+      color: var(--steel);
+      font-size: 11px;
+      text-transform: uppercase;
+      background: var(--soft);
+    }
+
+    .mono {
+      font-family: "IBM Plex Mono", monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      border-radius: 999px;
+      padding: 0 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: var(--soft);
+    }
+
+    .status.win { border-color: rgba(32,164,100,.4); color: var(--success); }
+    .status.warn { border-color: rgba(242,169,59,.5); color: #98620d; }
+    .status.block { border-color: rgba(231,71,60,.45); color: var(--signal); }
+
+    .lane {
+      display: inline-block;
+      width: 7px;
+      height: 24px;
+      border-radius: 3px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .zara { background: var(--zara); }
+    .alex { background: var(--alex); }
+    .david { background: var(--david); }
+
+    .decision-list {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .decision {
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--volt);
+      border-radius: 7px;
+      padding: 11px;
+      background: var(--soft);
+    }
+
+    .decision.danger { border-left-color: var(--signal); }
+    .decision.info { border-left-color: var(--cyan); }
+    .decision strong {
+      display: block;
+      font-size: 13px;
+    }
+    .decision p {
+      color: var(--steel);
+      margin: 5px 0 0;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .persona-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 14px;
+    }
+
+    .persona-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .persona-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 7px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      box-shadow: inset 3px 0 0 currentColor;
+    }
+
+    .score {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--steel);
+    }
+
+    .bar {
+      height: 6px;
+      background: var(--mist);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: var(--w);
+      background: var(--accent);
+    }
+
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+    }
+
+    .swatch {
+      min-height: 72px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+    }
+
+    .dark-swatch { color: white; border-color: rgba(0,0,0,.2); }
+
+    @media (max-width: 1040px) {
+      .shell { grid-template-columns: 1fr; }
+      .rail { display: none; }
+      .war-room { grid-template-columns: 1fr 1fr; }
+      .war-title { grid-column: 1 / -1; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.12); padding-bottom: 14px; }
+      .grid, .persona-grid { grid-template-columns: 1fr; }
+      .page-title { align-items: start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand">
+        <div class="mark">AF</div>
+        <div>
+          <strong>Operator OS</strong>
+          <span>Attitude Factory</span>
+        </div>
+      </div>
+      <nav>
+        <div class="nav-item active">Kommandozentrale</div>
+        <div class="nav-item">30-Tage-Kommando</div>
+        <div class="nav-item">Personas</div>
+        <div class="nav-item">Content-Produktion</div>
+        <div class="nav-item">Medien</div>
+        <div class="nav-item">Recherche</div>
+        <div class="nav-item">Kennzahlen</div>
+        <div class="nav-item">Regelcheck</div>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="crumb">
+          <span class="pill"><span class="dot"></span> 30-Tage-Test aktiv</span>
+          <span>Instagram zuerst</span>
+          <span class="mono">Letzte Kennzahlen: 09:42</span>
+        </div>
+        <div class="crumb">
+          <span class="pill">Gründer</span>
+          <span class="pill">Partner</span>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="page-title">
+          <div>
+            <h1>Kommandozentrale</h1>
+            <p class="subtitle">Tägliche Arbeitsfläche für Persona-Leistung, Entscheidungen und Produktionsdruck.</p>
+          </div>
+          <div>
+            <button class="button secondary">Recherche speichern</button>
+            <button class="button">Neuer Inhalt</button>
+          </div>
+        </div>
+
+        <section class="war-room">
+          <div class="war-title">
+            <h2>Tag 09 / 30</h2>
+            <p>Zara, Alex und David sind aktiv. Die Zuteilungsprüfung an Tag 14 ist in 5 Tagen.</p>
+          </div>
+          <div class="metric"><span>Posts raus</span><strong>21</strong></div>
+          <div class="metric"><span>Videos genutzt</span><strong>14</strong></div>
+          <div class="metric"><span>Kennzahlen fehlen</span><strong>06</strong></div>
+          <div class="metric"><span>Aktueller Gewinner</span><strong>David</strong></div>
+          <div class="metric"><span>Schwächste Spur</span><strong>Alex</strong></div>
+        </section>
+
+        <section class="grid">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Heute</h3>
+              <span class="pill">9 offen</span>
+            </div>
+            <table class="queue">
+              <thead>
+                <tr>
+                  <th>Persona</th>
+                  <th>Inhalt</th>
+                  <th>Zuständig</th>
+                  <th>Status</th>
+                  <th>Fällig</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="lane zara"></span>Zara</td>
+                  <td>Barrierereparatur-Karussell</td>
+                  <td>Partner</td>
+                  <td><span class="status warn">Material fehlt</span></td>
+                  <td class="mono">Heute</td>
+                </tr>
+                <tr>
+                  <td><span class="lane david"></span>David</td>
+                  <td>KI-Stack für Workflows</td>
+                  <td>Gründer</td>
+                  <td><span class="status win">Prüfung</span></td>
+                  <td class="mono">Heute</td>
+                </tr>
+                <tr>
+                  <td><span class="lane alex"></span>Alex</td>
+                  <td>Gym-Angst Kurzclip</td>
+                  <td>Partner</td>
+                  <td><span class="status block">Blockiert</span></td>
+                  <td class="mono">10:00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Entscheidungslogik</h3>
+              <span class="pill">4 Signale</span>
+            </div>
+            <div class="decision-list">
+              <div class="decision">
+                <strong>Ausbauen: Davids Karussell-Format</strong>
+                <p>3 Posts schlagen den Portfolio-Median bei Speicherungen pro 1.000 Reichweite.</p>
+              </div>
+              <div class="decision danger">
+                <strong>Schwaches Signal: Alex Zitatbilder</strong>
+                <p>Reichweite ist okay, aber die Follow-Rate liegt unter dem Test-Median.</p>
+              </div>
+              <div class="decision info">
+                <strong>Videoeinsatz-Kandidat: Zaras Routine-Map</strong>
+                <p>Hohe Speicher-Absicht. Guter Test für ein kurzes Bewegtbild.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="persona-grid">
+          <div class="persona-card" style="--accent: var(--zara);">
+            <div class="persona-top">
+              <div>
+                <h3>Zara Patel</h3>
+                <p class="subtitle">Inklusive Beauty-Bildung</p>
+              </div>
+              <div class="avatar"></div>
+            </div>
+            <div class="score"><span>Konsistenz</span><span class="mono">4.2</span></div>
+            <div class="bar"><i style="--w:84%;"></i></div>
+            <span class="status warn">Kennzahlen fehlen</span>
+          </div>
+
+          <div class="persona-card" style="--accent: var(--alex);">
+            <div class="persona-top">
+              <div>
+                <h3>Alex Moreno</h3>
+                <p class="subtitle">Fitness- und Disziplinsysteme</p>
+              </div>
+              <div class="avatar"></div>
+            </div>
+            <div class="score"><span>Konsistenz</span><span class="mono">3.7</span></div>
+            <div class="bar"><i style="--w:74%;"></i></div>
+            <span class="status block">Schwaches Signal</span>
+          </div>
+
+          <div class="persona-card" style="--accent: var(--david);">
+            <div class="persona-top">
+              <div>
+                <h3>David Chen</h3>
+                <p class="subtitle">KI-Ergebnisse aus Workflows</p>
+              </div>
+              <div class="avatar"></div>
+            </div>
+            <div class="score"><span>Konsistenz</span><span class="mono">4.6</span></div>
+            <div class="bar"><i style="--w:92%;"></i></div>
+            <span class="status win">Gewinner-Kandidat</span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h3>Palette und Signale</h3>
+            <span class="pill">Ruhige Basis, seltene Signalfarbe</span>
+          </div>
+          <div style="padding:14px">
+            <div class="swatches">
+              <div class="swatch dark-swatch" style="background:#191a1a">Tinte<br>#191A1A</div>
+              <div class="swatch dark-swatch" style="background:#2b2d2e">Graphit<br>#2B2D2E</div>
+              <div class="swatch" style="background:#ecefed">Nebel<br>#ECEFED</div>
+              <div class="swatch" style="background:#e7473c">Signal<br>#E7473C</div>
+              <div class="swatch" style="background:#b7f34a">Volt<br>#B7F34A</div>
+              <div class="swatch" style="background:#29a7e1">Cyan<br>#29A7E1</div>
+              <div class="swatch" style="background:#f2a93b">Bernstein<br>#F2A93B</div>
+              <div class="swatch" style="background:#d85c82">Zara<br>#D85C82</div>
+              <div class="swatch" style="background:#f36b2d">Alex<br>#F36B2D</div>
+              <div class="swatch dark-swatch" style="background:#2f6fed">David<br>#2F6FED</div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
