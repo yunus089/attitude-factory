@@ -2,8 +2,11 @@
 process.env.AUTH_ALLOW_SIGN_UP = "true";
 
 import { UserRole, UserStatus } from "@prisma/client";
-import { auth } from "../src/lib/auth";
-import { prisma } from "../src/lib/prisma";
+
+const [{ auth }, { prisma }] = await Promise.all([
+  import("../src/lib/auth"),
+  import("../src/lib/prisma")
+]);
 
 const seedUsers = [
   {
