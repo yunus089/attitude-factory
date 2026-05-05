@@ -1,4 +1,3 @@
-import "dotenv/config";
 
 import { PersonaStatus, PlatformName } from "@prisma/client";
 

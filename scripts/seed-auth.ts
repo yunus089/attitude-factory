@@ -1,4 +1,3 @@
-import "dotenv/config";
 
 process.env.AUTH_ALLOW_SIGN_UP = "true";
 
