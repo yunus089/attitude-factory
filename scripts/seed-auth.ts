@@ -2,9 +2,9 @@ import "dotenv/config";
 
 process.env.AUTH_ALLOW_SIGN_UP = "true";
 
-const { UserRole, UserStatus } = await import("@prisma/client");
-const { auth } = await import("../src/lib/auth");
-const { prisma } = await import("../src/lib/prisma");
+import { UserRole, UserStatus } from "@prisma/client";
+import { auth } from "../src/lib/auth";
+import { prisma } from "../src/lib/prisma";
 
 const seedUsers = [
   {
