@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 
-import { prisma } from "@/src/lib/prisma";
+import { prisma } from "./prisma";
 
 const authUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
 
