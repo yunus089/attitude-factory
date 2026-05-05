@@ -23,6 +23,8 @@ Kopiere diese Werte in das Dokploy Dashboard (Application -> Environment Variabl
 ```env
 # Datenbank (interne Dokploy-Verbindung)
 # Format: postgresql://[USER]:[PASSWORD]@[SERVICE_NAME]:5432/[DB_NAME]?schema=public
+# WICHTIG: Sonderzeichen im Passwort (z.B. # oder @) MÜSSEN URL-encoded werden!
+# # -> %23 | @ -> %40
 DATABASE_URL="postgresql://attitude:DEIN_POSTGRES_PASSWORT@postgres:5432/attitude_factory?schema=public"
 
 # Auth
