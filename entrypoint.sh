@@ -3,7 +3,7 @@ set -e
 
 # Führe Datenbank-Migrationen aus
 echo "Running database migrations..."
-if ! ./node_modules/.bin/prisma migrate deploy; then
+if ! npx prisma migrate deploy; then
   echo "❌ Migration failed!"
   exit 1
 fi
